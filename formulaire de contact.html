@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="stylesheet" href="styles.css">--> 
+    <title>Formulaire de Contact</title>
+    <style>body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f8ff; /* Couleur de fond légère */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    .form-container {
+        background-color: #ffffff; /* Fond blanc pour le formulaire */
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 400px;
+    }
+    
+    h2 {
+        text-align: center;
+        color: #007bff; /* Couleur bleue pour le titre */
+    }
+    
+    label {
+        margin-top: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    input, textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #007bff; /* Bordure bleue */
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    
+    input:focus, textarea:focus {
+        border-color: #0056b3; /* Couleur de bordure plus foncée au focus */
+        outline: none;
+    }
+    
+    button {
+        background-color: #007bff; /* Couleur bleue pour le bouton */
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+    }
+    
+    button:hover {
+        background-color: #0056b3; /* Couleur plus foncée au survol */
+    }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form id="contact-form" onsubmit="submitContact(event)">
+            <h2>Contactez-nous</h2>
+            <label for="name">Nom :</label>
+            <input type="text" id="name" required placeholder="Votre nom">
+
+            <label for="email">Email :</label>
+            <input type="email" id="email" required placeholder="Votre email">
+
+            <label for="message">Message :</label>
+            <textarea id="message" required placeholder="Votre message" rows="4"></textarea>
+
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+    <script>
+        // Initialisation d'EmailJS
+        (function() {
+            emailjs.init("Enzo Lord"); // Remplacez YOUR_USER_ID par votre ID utilisateur EmailJS
+        })();
+
+        // Fonction pour gérer l'envoi du formulaire
+        function submitContact(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            // Envoi de l'email
+            emailjs.send("service_p7n3gma", "__ejs-test-mail-service__", {
+                from_name: name,
+                from_email: email,
+                message: message
+            })
+            .then(function(response) {
+                alert('Message envoyé avec succès !');
+                document.getElementById('contact-form').reset(); // Réinitialisation du formulaire
+            }, function(error) {
+                alert('Échec de l\'envoi du message. Veuillez réessayer.');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription aux alertes email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="email"] {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 250px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .loading {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Inscription aux alertes par e-mail</h1>
+    <form id="alertForm" aria-labelledby="formTitle" method="post">
+        <label for="email">Votre e-mail :</label>
+        <input type="email" id="email" placeholder="exemple@domaine.com" required autocomplete="email" />
+        <button type="submit">S'inscrire</button>
+        <div class="loading" id="loading">Chargement...</div>
+    </form>
+    <div id="message"></div>
+
+    <script>
+        document.getElementById('alertForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const loadingMessage = document.getElementById('loading');
+            const messageDiv = document.getElementById('message');
+
+            loadingMessage.style.display = 'block'; // Afficher l'indicateur de chargement
+
+            fetch('http://localhost:3000/api/alertes-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            })
+            .then(response => {
+                loadingMessage.style.display = 'none'; // Cacher l'indicateur de chargement
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+                return response.text();
+            })
+            .then(message => {
+                messageDiv.innerText = message;
+                document.getElementById('alertForm').reset();
+            })
+            .catch(error => {
+                messageDiv.innerText = 'Erreur lors de l\'inscription : ' + error.message;
+            });
+            console.log
+        });
+       
+async function sendEmail() {
+    const response = await fetch('http://localhost:3000/api/alertes-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: 'user@example.com' }) // Remplacez par l'e-mail que vous souhaitez tester
+    });
+
+    if (response.ok) {
+        const data = await response.text();
+        console.log(data);
+    } else {
+        console.error('Erreur lors de l\'envoi de l\'e-mail:', response.status);
+    }
+}
+
+
+    </script>
+</body>
+</html>

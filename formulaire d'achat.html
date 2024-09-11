@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Formulaire d'Achat Immobilier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Couleur de fond légère */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .property {
+            background-color: #ffffff; /* Fond blanc pour le bien immobilier */
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            cursor: pointer;
+        }
+
+        .property img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .property h3 {
+            margin: 10px 0;
+            color: #007bff; /* Couleur bleue pour le titre */
+        }
+
+        .property p {
+            margin: 10px 0;
+        }
+
+        .property i {
+            color: #ff0000; /* Couleur rouge pour l'icône */
+            cursor: pointer;
+        }
+
+        .form-container {
+            display: none; /* Caché par défaut */
+            background-color: #ffffff; /* Fond blanc pour le formulaire */
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff; /* Couleur bleue pour le titre */
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #007bff; /* Bordure bleue */
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            border-color: #0056b3; /* Couleur de bordure plus foncée au focus */
+            outline: none;
+        }
+
+        button {
+            background-color: #007bff; /* Couleur bleue pour le bouton */
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Couleur plus foncée au survol */
+        }
+
+        /* Styles pour le fond sombre derrière le formulaire */
+        .overlay {
+            display: none; /* Caché par défaut */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="property" onclick="showForm()">
+        <img src="../photos/8.jpg" alt="Propriété 1">
+        <h3>Appartement à Bonapriso</h3>
+        <p>Prix: 9 000 000 fcfa  <br> 4 pièces</p>
+        <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Appartement à Bonapriso', '9 000 000 fcfa')"></i>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="form-container" id="form-container">
+        <form id="purchase-form" onsubmit="submitPurchase(event)">
+            <h2>Achat d'un Bien Immobilier</h2>
+
+            <label for="name">Nom :</label>
+            <input type="text" id="name" required placeholder="Votre nom">
+
+            <label for="email">Email :</label>
+            <input type="email" id="email" required placeholder="Votre email">
+
+            <label for="property">Type de Bien :</label>
+            <select id="property" required>
+                <option value="">Sélectionnez un bien</option>
+                <option value="Appartement">Appartement</option>
+                <option value="Maison">Maison</option>
+                <option value="Terrain">Terrain</option>
+            </select>
+
+            <label for="amount">Montant (en €) :</label>
+            <input type="number" id="amount" required min="1" placeholder="Montant">
+
+            <label>Méthode de paiement :</label>
+            <select id="payment-method" required>
+                <option value="">Sélectionnez une méthode</option>
+                <option value="Carte de crédit">Carte de crédit</option>
+                <option value="Virement bancaire">Virement bancaire</option>
+                <option value="Chèque">Chèque</option>
+            </select>
+
+            <button type="submit">Acheter</button>
+        </form>
+    </div>
+
+    <script>
+        function showForm() {
+            document.getElementById('form-container').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function hideForm() {
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function submitPurchase(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const property = document.getElementById('property').value;
+            const amount = document.getElementById('amount').value;
+            const paymentMethod = document.getElementById('payment-method').value;
+
+            // Validation simple
+            if (!name || !email || !property || !amount || !paymentMethod) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+
+            // Affichage d'un message de confirmation
+            alert(`Merci ${name} ! Votre achat d'un(e) ${property} pour un montant de ${amount} € a été effectué avec succès.\nMéthode de paiement : ${paymentMethod}`);
+
+            // Réinitialisation du formulaire
+            document.getElementById('purchase-form').reset();
+            
+            // Masquer le formulaire après soumission
+            hideForm();
+        }
+
+        function toggleFavorite(propertyName, propertyPrice) {
+            alert(`Bien ajouté aux favoris : ${propertyName} à ${propertyPrice}`);
+        }
+
+        document.getElementById('overlay').addEventListener('click', hideForm);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

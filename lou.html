@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="icon" type="image/png" href="image/logo.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KN IMMOBILIER</title>
+    <style>/* Général */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        .container {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.7) 90%), url("../photos/51.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; 
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    color: white; 
+}
+        
+        /* Navigation */
+        .menu {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        .menu header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        
+        .menu .logo p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .main-menu, .auth-menu {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .main-menu li, .auth-menu li {
+            margin-left: 20px;
+        }
+        
+        .main-menu a, .auth-menu a, .auth-menu button {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+            transition: background 0.3s;
+        }
+        
+        .main-menu a:hover, .auth-menu a:hover, .auth-menu button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Section */
+        h1, h2, h3 {
+            color: #007bff;
+        }
+        
+        .properties-section {
+            margin: 20px 0;
+        }
+        .properties {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colonnes égales */
+    gap: 20px; /* Espacement entre les éléments */
+    justify-content: center;
+    margin: 40px;
+}
+
+.property {
+    background: white;
+    margin: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.property:hover {
+    transform: scale(1.05); /* Légère augmentation au survol */
+}
+
+.property img {
+    max-width: 100%; /* S'assurer que l'image ne déborde pas */
+    border-radius: 5px;
+}
+        
+        .favorite-icon {
+            cursor: pointer;
+            color: #ff4081;
+        }
+        
+        /* Carte */
+        .map-section {
+            margin: 20px 0;
+        }
+        
+        #map {
+            border-radius: 8px;
+        }
+        
+        /* Formulaires */
+        input[type="text"], input[type="number"], input[type="email"], select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px 0;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            margin: 0 10px;
+        }
+        
+        .footer-section h4 {
+            margin-bottom: 10px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        /* Gallery */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .gallery-item {
+            flex: 1 1 calc(30% - 20px);
+            margin: 10px;
+            text-align: center;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        /* En-tête */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    padding: 0 5%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.logo {
+    color: rgb(43, 191, 228);
+    font-weight: 900;
+    font-size: 35px;
+}
+
+.logo span {
+    color: #273e60;
+}
+
+.menu {
+    display: flex;
+    margin-right: 20px;
+}
+
+.menu li {
+    margin: 0 15px;
+    list-style: none;
+}
+
+.menu li a {
+    font-size: 14px;
+    text-decoration: none; 
+    color: #999;
+    position: relative;
+}
+
+.menu li a:hover {
+    color: rgb(43, 191, 228);
+}
+h1,h3,h2{
+    text-align: center;
+}
+
+/* Pied de page */
+.footer {
+    background-color: #e9ecf1e1;
+    color: #343a40;
+    padding: 40px 20px;
+    text-align: left;
+    margin-top: 20px; /* Pour éviter le chevauchement avec le contenu */
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.footer-section {
+    flex: 1;
+    margin: 10px;
+}
+
+.footer-section h4 {
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.footer-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.footer-section ul li a {
+    text-decoration: none;
+    color: #343a40;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: rgb(43, 191, 228);
+}
+
+        </style>
+</head>
+<body>
+
+    <nav class="menu">
+        <header>
+            <div class="logo">
+                <p><span>KN</span>IMMOBILIER</p>
+            </div>
+            <ul class="main-menu">
+                <li><a href="accueil.html">Accueil</a></li>
+                <li><a href="Acheter.html">Acheter</a></li>
+                <li><a href="#">Vendre</a></li>
+                <li><a href="lou.html">Louer</a></li>
+                <li><a href="#">Contactez-nous</a></li>
+            </ul>
+            <ul class="auth-menu">
+                <li><a href="#">S'inscrire</a></li>
+                <li><a href="#">Se connecter</a></li>
+                <li><button class="button">Estimer mon bien</button></li>
+            </ul>
+        </header>
+    </nav>
+
+    <div class="container">
+        <h1>Des maisons qui inspirent</h1>
+        <p class="intro">Explorez nos propriétés exceptionnelles.</p>
+        <button onclick="getLocation()">Trouver ma position</button>
+    </div> 
+
+    <section class="search-filters">
+        <h2>Filtres de recherche</h2>
+        <form id="searchForm">
+            <input type="text" placeholder="Localisation" />
+            <input type="number" placeholder="Prix Min (€)" />
+            <input type="number" placeholder="Prix Max (€)" />
+            <select>
+                <option value="">Type de propriété</option>
+                <option value="appartement">Appartement</option>
+                <option value="maison">Maison</option>
+                <option value="bureau">Bureau</option>
+            </select>
+            <button type="submit">Rechercher</button>
+        </form>
+    </section>
+
+    <section class="properties-section">
+        <h1>PROPRIÉTÉS À LOUER</h1>
+        <div class="properties">
+            <div class="property" data-title="Appartement à Bonapriso" data-price="500 000 fcfa/mois" data-lat="4.0511" data-lng="9.7085">
+                <img src="../photos/8.jpg" alt="Appartement à Bonapriso">
+                <div class="property-details">
+                    <h3>Appartement à Bonapriso</h3>
+                    <p>Prix: 500 000 fcfa/mois <br>2 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Appartement à Bonapriso', '500 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-bonapriso')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <div class="property" data-title="Maison à Douala" data-price="1 000 000 fcfa/mois" data-lat="4.0511" data-lng="9.7085">
+                <img src="../photos/9.jpg" alt="Maison à Douala">
+                <div class="property-details">
+                    <h3>Maison à Douala</h3>
+                    <p>Prix: 1 000 000 fcfa/mois <br>4 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Maison à Douala', '1 000 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-douala')">Visite Virtuelle</button>
+                </div>
+            </div>
+                    <div class="property" data-title="Maison à Buea" data-price="600 000 fcfa/mois">
+                <img src="../photos/14.jpg" alt="Maison à Buea">
+                <div class="property-details">
+                    <h3>Maison à Buea</h3>
+                    <p>Prix: 600 000 fcfa/mois <br>3 chambres</p>
+                    <div class="rating">⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Maison à Buea', '600 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-buea')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <div class="property" data-title="Appartement à Limbe" data-price="500 000 fcfa/mois">
+                <img src="../photos/15.jpg" alt="Appartement à Limbe">
+                <div class="property-details">
+                    <h3>Appartement à Limbe</h3>
+                    <p>Prix: 500 000 fcfa/mois <br>2 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Appartement à Limbe', '500 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-limbe2')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <div class="property" data-title="Maison à Bafoussam" data-price="650 000 fcfa/mois">
+                <img src="../photos/16.jpg" alt="Maison à Bafoussam">
+                <div class="property-details">
+                    <h3>Maison à Bafoussam</h3>
+                    <p>Prix: 650 000 fcfa/mois <br>4 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Maison à Bafoussam', '650 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-bafoussam')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <!-- Ajoutez d'autres propriétés ici -->
+        </div>
+    </section>
+
+    
+
+<section class="alert-section">
+    <h2>Recevoir des alertes par e-mail</h2>
+    <form id="alertForm">
+        <div>
+            <label for="alertEmail">Votre e-mail :</label>
+            <input type="email" id="alertEmail" required>
+        </div>
+        <div>
+            <label for="alertMessage">Message :</label>
+            <textarea id="alertMessage" rows="4" required></textarea>
+        </div>
+        <button type="button" onclick="sendAlert()">Envoyer l'alerte</button>
+    </form>
+    <h3 id="alertResult"></h3>
+</section>
+
+<style>
+    .alert-section {
+        margin: 20px 0;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-section input, .alert-section textarea {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .alert-section button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .alert-section button:hover {
+        background-color: #0056b3;
+    }
+</style>
+<style>
+#map {
+    height: 600px;
+    border-radius: 8px;
+}
+.side {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+</style>
+</head>
+<body>
+
+
+
+
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script>
+const properties = [
+{ title: "Appartement à Bonapriso", price: "9 000 000 fcfa", lat: 4.0511, lng: 9.7085, virtualTour: "https://example.com/visite1" },
+// Ajoutez d'autres propriétés ici
+];
+
+
+
+function addToFavorites(title) {
+const favoritesList = document.getElementById('favoritesList');
+const listItem = document.createElement('li');
+listItem.textContent = title;
+favoritesList.appendChild(listItem);
+}
+
+function searchLocation() {
+const location = document.getElementById('location').value;
+const geocoder = L.Control.Geocoder.nominatim();
+
+geocoder.geocode(location, function(results) {
+    if (results.length > 0) {
+        const latLng = results[0].center;
+        map.setView(latLng, 13);
+        L.marker(latLng).addTo(map).bindPopup("Vous êtes ici").openPopup();
+    } else {
+        alert('Localisation non trouvée');
+    }
+});
+}
+
+function showRoute(lat, lng) {
+if (typeof userMarker !== 'undefined') {
+    map.removeLayer(userMarker);
+}
+navigator.geolocation.getCurrentPosition(function(position) {
+    const userLatLng = [position.coords.latitude, position.coords.longitude];
+    userMarker = L.marker(userLatLng).addTo(map).bindPopup("Vous êtes ici").openPopup();
+    L.Routing.control({
+        waypoints: [
+            L.latLng(userLatLng),
+            L.latLng(lat, lng)
+        ],
+        routeWhileDragging: true
+    }).addTo(map);
+}, function() {
+    alert("Impossible de récupérer votre position.");
+});
+}
+
+// Fonction pour envoyer des alertes par email (nécessite un backend ou un service d'email)
+function sendEmailAlert(propertyTitle) {
+// Utilisez un service comme EmailJS ou un backend pour envoyer l'alerte
+alert(`Alerte envoyée pour la propriété: ${propertyTitle}`);
+}
+
+// Statistiques (exemple simple)
+function showStatistics() {
+// Intégrer une API pour récupérer les statistiques sur le marché immobilier
+alert("Statistiques du marché immobilier :\n- Prix moyen: 8 500 000 fcfa\n- Taux de vente: 75%");
+}
+</script>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Liens utiles</h4>
+            <ul>
+                <li><a href="#">Acheter</a></li>
+                <li><a href="#">Louer</a></li>
+                <li><a href="#">Vendre</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">À propos</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contact</h4>
+            <p>Email: <a href="mailto:info@exemple.com">enzolord366@gmail.com</a></p>
+            <p>Téléphone: <a href="tel:693707794">+237 693707794</a></p>
+        </div>
+        <div class="footer-section">
+            <h4>Suivez-nous</h4>
+            <div class="social-icons">
+                <a href="https://www.facebook.com" class="social-icon">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://twitter.com"  class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.instagram.com"  class="social-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://wa.me/693707794" target="_blank" class="social-icon">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="mailto:enzolord366@gmail.com" class="social-icon">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+     
+        <div class="footer-section">
+            <h4>A Propos</h4>
+            <p><a href="#">Qui sommes-nous ?</a></p>
+                <p><a href="#">Contacter le service client</a></p>
+                    <p><a href="#">Nous rejoindre</a></p>
+                        <p><a href="#">Presse</a></p>
+        </div>
+        <div class="footer-section">            <h3>Mes Favoris</h3>
+            <div id="favorites-container"></div>
+            
+                    <!-- Icône pour ouvrir la fenêtre flottante -->
+            <i class="fas fa-star favorite-modal-icon" onclick="openFavorites()"></i>
+            
+            <!-- Fenêtre flottante pour afficher les favoris -->
+            <div id="favorites-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeFavorites()">&times;</span>
+                    <h3>Mes Favoris</h3>
+                    <div id="favorites-container"></div>
+                </div>
+            </div></div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; Realiser par  <span class="kn">KN</span>IMMOBILIER Tous droits réservés.</p>    </div>
+</footer>
+  <!-- Footer -->    
+
+    <script>
+        let map;
+        let userMarker;
+
+        function initMap() {
+            map = L.map('map').setView([4.0511, 9.7085], 13); // Coordonnées de Bonapriso
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Ajout de marqueurs pour chaque propriété
+            document.querySelectorAll('.property').forEach(property => {
+                const lat = property.dataset.lat;
+                const lng = property.dataset.lng;
+                L.marker([lat, lng]).addTo(map).bindPopup(property.dataset.title);
+            });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("La géolocalisation n'est pas supportée par ce navigateur.");
+            }
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            if (userMarker) {
+                map.removeLayer(userMarker);
+            }
+
+            userMarker = L.marker([lat, lng]).addTo(map).bindPopup("Vous êtes ici").openPopup();
+            map.setView([lat, lng], 13); // Centrer la carte sur la position de l'utilisateur
+
+            // Optionnel : Ajouter une recherche de propriétés à proximité ici
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("L'utilisateur a refusé la demande de géolocalisation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Les informations de position ne sont pas disponibles.");
+                    break;
+                case error.TIMEOUT:
+                    alert("La demande de géolocalisation a expiré.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("Une erreur inconnue s'est produite.");
+                    break;
+            }
+        }
+
+        window.onload = initMap;
+        
+    </script>
+
+    
+</body>
+</html>

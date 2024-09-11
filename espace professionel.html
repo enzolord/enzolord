@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Professionnel - Gestion des Annonces</title>
+    <style>body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4ff;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    header {
+        background-color: #004080; /* Bleu foncé */
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    nav ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    nav ul li {
+        display: inline;
+        margin: 0 15px;
+    }
+    
+    nav a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    .content {
+        margin: 20px auto;
+        max-width: 800px;
+    }
+    
+    .manage-ads {
+        background-color: #ffffff; /* Blanc */
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    
+    .form-container {
+        margin-bottom: 20px;
+    }
+    
+    label {
+        display: block;
+        margin: 10px 0 5px;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    button {
+        background-color: #004080; /* Bleu foncé */
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    button:hover {
+        background-color: #003366; /* Bleu plus foncé pour l'effet hover */
+    }
+    
+    .ad-list {
+        margin-top: 20px;
+    }
+    
+    .ad-list ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    .ad-list li {
+        border: 1px solid #004080; /* Bordure bleu foncé */
+        border-radius: 5px;
+        padding: 15px;
+        margin: 10px 0;
+        background-color: #e6f2ff; /* Bleu clair */
+    }
+    
+    .ad-list img {
+        display: block;
+        margin-top: 10px;
+        max-width: 100px;
+    }
+    .stats {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.contact-list {
+    margin-top: 20px;
+}
+
+.contact-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.contact-list li {
+    border: 1px solid #004080;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #e6f2ff;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Espace Professionnel</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Accueil</a></li>
+                <li><a href="#">Mes Annonces</a></li>
+                <li><a href="#">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="content">
+        <section class="manage-ads">
+            <h2>Gérer mes Annonces</h2>
+
+            <div class="form-container">
+                <h3>Ajouter une Annonce</h3>
+                <form id="add-ad-form" onsubmit="addAd(event)">
+                    <label for="title">Titre :</label>
+                    <input type="text" id="title" required placeholder="Titre de l'annonce">
+
+                    <label for="description">Description :</label>
+                    <textarea id="description" required placeholder="Description du bien"></textarea>
+
+                    <label for="price">Prix (FCFA) :</label>
+                    <input type="number" id="price" required min="1" placeholder="Prix en FCFA">
+
+                    <label for="image">Photo :</label>
+                    <input type="file" id="image" accept="image/*" required>
+
+                    <button type="submit">Ajouter l'Annonce</button>
+                </form>
+            </div>
+
+            <div class="ad-list">
+                <h3>Mes Annonces</h3>
+                <ul id="ad-list">
+                    <!-- Les annonces seront ajoutées ici dynamiquement -->
+                </ul>
+            </div>
+        </section>
+    </main>
+
+
+    <script>
+        function addAd(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value;
+            const image = document.getElementById('image').files[0];
+
+            const adList = document.getElementById('ad-list');
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <h4>${title}</h4>
+                <p>${description}</p>
+                <p>Prix: ${price} FCFA</p>
+                <img src="${URL.createObjectURL(image)}" alt="${title}" width="100">
+                <button onclick="editAd(this)">Modifier</button>
+                <button onclick="deleteAd(this)">Supprimer</button>
+            `;
+            adList.appendChild(listItem);
+
+            // Réinitialiser le formulaire
+            document.getElementById('add-ad-form').reset();
+        }
+
+        function editAd(button) {
+            const listItem = button.parentElement;
+            const title = listItem.querySelector('h4').innerText;
+            const description = listItem.querySelector('p').innerText.split(': ')[1];
+            const price = listItem.querySelector('p:nth-of-type(2)').innerText.split(': ')[1].split(' ')[0];
+
+            document.getElementById('title').value = title;
+            document.getElementById('description').value = description;
+            document.getElementById('price').value = price;
+
+            deleteAd(button);
+        }
+
+        function deleteAd(button) {
+            const listItem = button.parentElement;
+            listItem.remove();
+        }
+    </script>
+     <main class="content">
+        <section class="manage-contacts">
+            <h2>Demandes de Renseignement</h2>
+            <div class="contact-list">
+                <ul id="contact-list">
+                    <!-- Les demandes de renseignement seront ajoutées ici -->
+                </ul>
+            </div>
+        </section>
+
+        <section class="statistics">
+            <h2>Statistiques des Annonces</h2>
+            <div class="stats">
+                <p>Total d'Annonces : <span id="total-ads">0</span></p>
+                <p>Total de Visites : <span id="total-visits">0</span></p>
+            </div>
+            <button onclick="viewStats()">Voir les Détails</button>
+        </section>
+    </main>
+
+  
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Messagerie</title>
+    <link rel="stylesheet" href="styles/chat.css">
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-window">
+        <h2 id="chat-user">Chat avec</h2>
+        <input type="text" id="search-input" placeholder="Rechercher un message..." oninput="searchMessages()">
+        <div class="messages" id="messages"></div>
+        <input type="text" id="message-input" placeholder="Écrire un message..." oninput="typingStatus()">
+        <input type="file" id="file-input" onchange="sendFile()" />
+        <button onclick="sendMessage()">Envoyer</button>
+        <button onclick="toggleDarkMode()">Mode Sombre</button>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = urlParams.get('user');
+    document.getElementById('chat-user').innerText = `Chat avec ${user}`;
+
+    // Ajoutez ici le code JavaScript pour gérer l'envoi de messages, etc.
+</script>
+
+</body>
+</html>

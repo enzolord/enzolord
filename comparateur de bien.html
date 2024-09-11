@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparateur de Biens Immobiliers</title>
+    <style>body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4ff;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    h2, h3, h4 {
+        color: #004080; /* Bleu foncé */
+    }
+    
+    .form-container {
+        background-color: #ffffff; /* Blanc */
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-width: 800px;
+        margin: auto;
+    }
+    
+    .property {
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid #004080; /* Bordure bleu foncé */
+        border-radius: 5px;
+        background-color: #e6f2ff; /* Bleu clair */
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    
+    input, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #004080; /* Bordure bleu foncé */
+        border-radius: 5px;
+        box-sizing: border-box;
+        transition: border-color 0.3s, box-shadow 0.3s; /* Transition douce */
+    }
+    
+    input:focus, select:focus {
+        border-color: #0066cc; /* Bordure bleue claire */
+        box-shadow: 0 0 5px rgba(0, 102, 204, 0.5); /* Ombre portée */
+    }
+    
+    button {
+        background-color: #004080; /* Bleu foncé */
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s, transform 0.2s; /* Ajout de transform */
+    }
+    
+    button:hover {
+        background-color: #003366; /* Bleu plus foncé pour l'effet hover */
+        transform: scale(1.05); /* Légère augmentation de la taille */
+    }
+    
+    .result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f0f8ff; /* Bleu très clair */
+        border: 1px solid #004080; /* Bordure bleu foncé */
+        border-radius: 5px;
+        opacity: 0; /* Commence invisible */
+        transform: translateY(20px); /* Déplacement vers le bas */
+        transition: opacity 0.5s ease, transform 0.5s ease; /* Transition pour l'opacité et la position */
+    }
+    
+    .result.show {
+        opacity: 1; /* Rend visible */
+        transform: translateY(0); /* Remet à la position d'origine */
+    }
+    
+    .comparison-table {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    
+    .comparison-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #004080; /* Bordure bleu foncé */
+    }
+    
+    .comparison-row:last-child {
+        border-bottom: none; /* Supprime la bordure du dernier élément */
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    
+    th, td {
+        border: 1px solid #004080; /* Bordure bleu foncé */
+        padding: 10px;
+        text-align: left;
+    }
+    
+    th {
+        background-color: #004080; /* Bleu foncé */
+        color: white;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #e6f2ff; /* Bleu clair */
+    }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Comparateur de Biens Immobiliers</h2>
+        <form id="comparison-form" onsubmit="compareProperties(event)">
+            <div class="property">
+                <h3>Bien 1</h3>
+                <label for="type1">Type de Bien :</label>
+                <select id="type1" required>
+                    <option value="">Sélectionnez un bien</option>
+                    <option value="Appartement">Appartement</option>
+                    <option value="Maison">Maison</option>
+                    <option value="Terrain">Terrain</option>
+                </select>
+
+                <label for="surface1">Surface (m²) :</label>
+                <input type="number" id="surface1" required min="1" placeholder="Surface en m²">
+
+                <label for="price1">Prix (FCFA) :</label>
+                <input type="number" id="price1" required min="1" placeholder="Prix en FCFA">
+
+                <label for="zone1">Zone :</label>
+                <select id="zone1" required>
+                    <option value="">Sélectionnez une zone</option>
+                    <option value="Centre-ville">Centre-ville</option>
+                    <option value="Banlieue">Banlieue</option>
+                    <option value="Rural">Rural</option>
+                </select>
+
+                <label for="condition1">État du Bien :</label>
+                <select id="condition1" required>
+                    <option value="">Sélectionnez l'état</option>
+                    <option value="Neuf">Neuf</option>
+                    <option value="Bon état">Bon état</option>
+                    <option value="À rénover">À rénover</option>
+                </select>
+            </div>
+
+            <div class="property">
+                <h3>Bien 2</h3>
+                <label for="type2">Type de Bien :</label>
+                <select id="type2" required>
+                    <option value="">Sélectionnez un bien</option>
+                    <option value="Appartement">Appartement</option>
+                    <option value="Maison">Maison</option>
+                    <option value="Terrain">Terrain</option>
+                </select>
+
+                <label for="surface2">Surface (m²) :</label>
+                <input type="number" id="surface2" required min="1" placeholder="Surface en m²">
+
+                <label for="price2">Prix (FCFA) :</label>
+                <input type="number" id="price2" required min="1" placeholder="Prix en FCFA">
+
+                <label for="zone2">Zone :</label>
+                <select id="zone2" required>
+                    <option value="">Sélectionnez une zone</option>
+                    <option value="Centre-ville">Centre-ville</option>
+                    <option value="Banlieue">Banlieue</option>
+                    <option value="Rural">Rural</option>
+                </select>
+
+                <label for="condition2">État du Bien :</label>
+                <select id="condition2" required>
+                    <option value="">Sélectionnez l'état</option>
+                    <option value="Neuf">Neuf</option>
+                    <option value="Bon état">Bon état</option>
+                    <option value="À rénover">À rénover</option>
+                </select>
+            </div>
+
+            <button type="submit">Comparer</button>
+        </form>
+
+        <div id="comparison-result" class="result"></div>
+    </div>
+
+    <script>
+        function compareProperties(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            // Récupération des valeurs pour le Bien 1
+            const type1 = document.getElementById('type1').value;
+            const surface1 = parseFloat(document.getElementById('surface1').value);
+            const price1 = parseFloat(document.getElementById('price1').value);
+            const zone1 = document.getElementById('zone1').value;
+            const condition1 = document.getElementById('condition1').value;
+
+            // Récupération des valeurs pour le Bien 2
+            const type2 = document.getElementById('type2').value;
+            const surface2 = parseFloat(document.getElementById('surface2').value);
+            const price2 = parseFloat(document.getElementById('price2').value);
+            const zone2 = document.getElementById('zone2').value;
+            const condition2 = document.getElementById('condition2').value;
+
+            // Affichage des résultats de comparaison
+            let resultHtml = `<h3>Résultats de la Comparaison</h3>`;
+            resultHtml += `<div class="comparison-table">`;
+            resultHtml += `<div class="comparison-row"><div><strong>Critère</strong></div><div><strong>Bien 1</strong></div><div><strong>Bien 2</strong></div></div>`;
+            resultHtml += `<div class="comparison-row"><div>Type</div><div>${type1}</div><div>${type2}</div></div>`;
+            resultHtml += `<div class="comparison-row"><div>Surface (m²)</div><div>${surface1}</div><div>${surface2}</div></div>`;
+            resultHtml += `<div class="comparison-row"><div>Prix (FCFA)</div><div>${price1.toLocaleString('fr-FR')}</div><div>${price2.toLocaleString('fr-FR')}</div></div>`;
+            resultHtml += `<div class="comparison-row"><div>Zone</div><div>${zone1}</div><div>${zone2}</div></div>`;
+            resultHtml += `<div class="comparison-row"><div>État</div><div>${condition1}</div><div>${condition2}</div></div>`;
+            resultHtml += `</div>`;
+
+            // Comparaison des prix au m²
+            const pricePerM2_1 = price1 / surface1;
+            const pricePerM2_2 = price2 / surface2;
+            resultHtml += `<h4>Prix au m²</h4>`;
+            resultHtml += `<p>Bien 1 : ${pricePerM2_1.toLocaleString('fr-FR')} FCFA/m²</p>`;
+            resultHtml += `<p>Bien 2 : ${pricePerM2_2.toLocaleString('fr-FR')} FCFA/m²</p>`;
+
+            // Affichage des résultats
+            const resultElement = document.getElementById('comparison-result');
+            resultElement.innerHTML = resultHtml;
+            resultElement.classList.add('show'); // Ajoute la classe pour l'animation
+        }
+    </script>
+</body>
+</html>

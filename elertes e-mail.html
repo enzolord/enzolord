@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>alertes e-mail</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Couleur de fond légère */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.form-container {
+    background-color: #ffffff; /* Fond blanc pour le formulaire */
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+}
+
+h2 {
+    text-align: center;
+    color: #007bff; /* Couleur bleue pour le titre */
+}
+
+label {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #007bff; /* Bordure bleue */
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: #0056b3; /* Couleur de bordure plus foncée au focus */
+    outline: none;
+}
+
+button {
+    background-color: #007bff; /* Couleur bleue pour le bouton */
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3; /* Couleur plus foncée au survol */
+}
+
+    </style>
+</head>
+<body>
+    <!--s'inscrire aux alertes e-mail-->
+    <form id="alert-form" onsubmit="submitAlert(event)">
+        <label for="email">Email :</label>
+        <input type="email" id="email" required>
+        
+        <label for="criteria">Critères :</label>
+        <input type="text" id="criteria" required placeholder="Ex: 3 pièces, Bonapriso">
+        
+        <button type="submit">S'inscrire aux alertes</button>
+    </form>
+    <!--Stocker les criteres NOTE.JS  ET MONGODB-->
+    <script>
+        const mongoose = require('mongoose');
+
+const alertSchema = new mongoose.Schema({
+    email: String,
+    criteria: String
+});
+
+const Alert = mongoose.model('Alert', alertSchema);
+
+// Fonction pour ajouter une alerte
+async function addAlert(email, criteria) {
+    const alert = new Alert({ email, criteria });
+    await alert.save();
+}
+
+    <!--Verifier les nouveaux biens  ()-->
+    async function checkNewProperty(newProperty) {
+        const alerts = await Alert.find();
+    
+        alerts.forEach(alert => {
+            if (matchesCriteria(newProperty, alert.criteria)) {
+                sendEmail(alert.email, newProperty);
+            }
+        });
+    }
+    
+    // Fonction pour vérifier si le bien correspond aux critères
+    function matchesCriteria(property, criteria) {
+        // Implémentez la logique pour comparer les critères
+        return property.description.includes(criteria) || property.location.includes(criteria);
+    }
+    
+    //Fonction d'envoie  (avec NODEMAILER)-->
+        const nodemailer = require('nodemailer');
+
+async function sendEmail(to, property) {
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'your-email@gmail.com',
+            pass: 'your-email-password'
+        }
+    });
+
+    let mailOptions = {
+        from: 'your-email@gmail.com',
+        to: to,
+        subject: 'Nouvelle Propriété Correspondante',
+        text: `Une nouvelle propriété correspondant à vos critères a été ajoutée : ${property.description} à ${property.location}.`
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
+
+ // <!--Planification de taches Automatises (NOTE.JS avec la bibiotheque NODE-CRON)-->
+
+    const cron = require('node-cron');
+
+// Planifier une tâche pour vérifier les nouveaux biens toutes les heures
+cron.schedule('0 * * * *', async () => {
+    const newProperties = await getNewProperties(); // Fonction pour obtenir les nouveaux biens
+    await checkNewProperties(newProperties);
+});
+//Recuperation de nouveaux biens 
+async function getNewProperties() {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    return await Property.find({ createdAt: { $gte: oneHourAgo } }); // Exemple avec Mongoose
+}
+//Verification et envoie des emails
+
+async function checkNewProperties(newProperties) {
+    const alerts = await Alert.find();
+
+    newProperties.forEach(property => {
+        alerts.forEach(alert => {
+            if (matchesCriteria(property, alert.criteria)) {
+                sendEmail(alert.email, property);
+            }
+        });
+    });
+}
+// Gestion des erreurs et logs
+cron.schedule('0 * * * *', async () => {
+    try {
+        const newProperties = await getNewProperties();
+        await checkNewProperties(newProperties);
+        console.log('Vérification des nouveaux biens effectuée avec succès.');
+    } catch (error) {
+        console.error('Erreur lors de la vérification des nouveaux biens:', error);
+    }
+});
+// A AJOUTER       Optimisation des Performances
+//Mise en Cache : Utilisez un système de mise en cache pour éviter de vérifier les mêmes biens plusieurs fois.
+//Batch Processing : Traitez les alertes par lots pour réduire le nombre d'envois d'emails si plusieurs ut
+  </script>
+
+</body>
+</html>

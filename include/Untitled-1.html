@@ -1,0 +1,47 @@
+<script>
+
+    function toggleFavorite(title, price) {
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        const icon = event.target; // Récupérer l'icône cliquée
+    
+        // Vérifier si la propriété est déjà dans les favoris
+        const index = favorites.findIndex(fav => fav.title === title);
+        if (index > -1) {
+            // Retirer des favoris
+            favorites.splice(index, 1);
+            icon.classList.remove('favorited'); // Retirer la classe favorisée
+            alert(`${title} a été retiré de vos favoris.`);
+        } else {
+            // Ajouter aux favoris
+            favorites.push({ title, price });
+            icon.classList.add('favorited'); // Ajouter la classe favorisée
+            alert(`${title} a été ajouté à vos favoris.`);
+        }
+    
+        // Sauvegarder les favoris dans le stockage local
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+    
+    // Fonction pour afficher les favoris
+    function displayFavorites() {
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        const favoritesContainer = document.getElementById('favorites-container');
+        favoritesContainer.innerHTML = '';
+    
+        if (favorites.length === 0) {
+            favoritesContainer.innerHTML = '<p>Aucun favori enregistré.</p>';
+            return;
+        }
+    
+        favorites.forEach(fav => {
+            const favoriteDiv = document.createElement('div');
+            favoriteDiv.className = 'favorite-property';
+            favoriteDiv.innerHTML = `<h4>${fav.title}</h4><p>Prix: ${fav.price}</p>`;
+            favoritesContainer.appendChild(favoriteDiv);
+        });
+    }
+    
+    // Appeler displayFavorites pour afficher les favoris au chargement de la page
+    window.onload = displayFavorites;
+    
+        </script>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estimation Immobilière</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Couleur de fond légère */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff; /* Couleur bleue pour le bouton */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Couleur plus foncée au survol */
+        }
+
+        .overlay {
+            display: none; /* Masquer par défaut */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fom-container {
+            background-color: #ffffff; /* Fond blanc pour le formulaire */
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff; /* Couleur bleue pour le titre */
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #007bff; /* Bordure bleue */
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff; /* Couleur bleue pour le bouton */
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Couleur plus foncée au survol */
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<button onclick="opeForm()">Ouvrir le Formulaire d'Estimation</button>
+
+<div class="overelay" id="overelay" onclick="closForm()">
+    <div class="fom-container" id="fom-container" onclick="event.stopPropagation();">
+        <form id="estimate-form" onsubmit="calculateEstimate(event)">
+            <h2>Estimation d'un Bien Immobilier</h2>
+            <label for="property-type">Type de Bien :</label>
+            <select id="property-type" required>
+                <option value="">Sélectionnez un bien</option>
+                <option value="Appartement">Appartement</option>
+                <option value="Maison">Maison</option>
+                <option value="Terrain">Terrain</option>
+            </select>
+            <label for="surface">Surface (m²) :</label>
+            <input type="number" id="surface" required min="1" placeholder="Surface en m²">
+            <label for="location">Localisation :</label>
+            <input type="text" id="location" required placeholder="Localisation du bien">
+            <label for="zone">Zone :</label>
+            <select id="zone" required>
+                <option value="">Sélectionnez une zone</option>
+                <option value="Centre-ville">Centre-ville</option>
+                <option value="Banlieue">Banlieue</option>
+                <option value="Rural">Rural</option>
+            </select>
+            <label for="condition">État du Bien :</label>
+            <select id="condition" required>
+                <option value="">Sélectionnez l'état</option>
+                <option value="Neuf">Neuf</option>
+                <option value="Bon état">Bon état</option>
+                <option value="À rénover">À rénover</option>
+            </select>
+            <button type="submit">Estimer</button>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
+</div>
+
+<script>
+    function opeForm() {
+        document.getElementById('overelay').style.display = 'flex';
+    }
+
+    function closForm() {
+        document.getElementById('overelay').style.display = 'none';
+    }
+
+    function calculateEstimate(event) {
+        event.preventDefault(); // Empêche le rechargement de la page
+        const propertyType = document.getElementById('property-type').value;
+        const surface = parseFloat(document.getElementById('surface').value);
+        const condition = document.getElementById('condition').value;
+        const zone = document.getElementById('zone').value;
+
+        let basePricePerM2;
+
+        // Définir le prix au m² selon le type de bien
+        switch (propertyType) {
+            case 'Appartement':
+                basePricePerM2 = 600; 
+                break;
+            case 'Maison':
+                basePricePerM2 = 5000; 
+                break;
+            case 'Terrain':
+                basePricePerM2 = 7500; 
+                break;
+            default:
+                alert('Veuillez sélectionner un type de bien.');
+                return;
+        }
+
+        // Ajustement du prix selon l'état du bien
+        let conditionMultiplier;
+        switch (condition) {
+            case 'Neuf':
+                conditionMultiplier = 1.2; // 20% de plus
+                break;
+            case 'Bon état':
+                conditionMultiplier = 1.0; // Prix normal
+                break;
+            case 'À rénover':
+                conditionMultiplier = 0.8; // 20% de moins
+                break;
+            default:
+                alert('Veuillez sélectionner l\'état du bien.');
+                return;
+        }
+
+        // Coefficient selon la zone
+        let zoneMultiplier;
+        switch (zone) {
+            case 'Centre-ville':
+                zoneMultiplier = 1.5; // 50% de plus
+                break;
+            case 'Banlieue':
+                zoneMultiplier = 1.2; // 20% de plus
+                break;
+            case 'Rural':
+                zoneMultiplier = 0.8; // 20% de moins
+                break;
+            default:
+                alert('Veuillez sélectionner une zone.');
+                return;
+        }
+
+        // Calcul de l'estimation
+        const estimatedPrice = surface * basePricePerM2 * conditionMultiplier * zoneMultiplier;
+
+        // Affichage du résultat
+        document.getElementById('result').innerHTML = `
+            <h3>Estimation</h3>
+            <p>Le prix estimé pour votre ${propertyType} de ${surface} m² dans la zone ${zone} est de <strong>${estimatedPrice.toLocaleString('fr-FR', { style: 'currency', currency: 'XAF' })}</strong>.</p>
+        `;
+    }
+</script>
+
+</body>
+</html>

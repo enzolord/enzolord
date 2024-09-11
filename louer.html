@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="icon" type="image/png" href="image/logo.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KN IMMOBILIER - Louer</title>
+    <style>
+        /* Général */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("../photos/51.jpg");
+            background-size: cover;
+            background-position: center;
+            height: 100vh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            color: white; 
+        }
+
+        /* Navigation */
+        .menu {
+            background-color: #343a40; /* Couleur du menu */
+            color: #fff;
+        }
+
+        .menu header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .menu .logo p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .main-menu, .auth-menu {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-menu li, .auth-menu li {
+            margin-left: 20px;
+        }
+
+        .main-menu a, .auth-menu a, .auth-menu button {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+            transition: background 0.3s;
+        }
+
+        .main-menu a:hover, .auth-menu a:hover, .auth-menu button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Boutons */
+        .search-filters button {
+            background-color: #28a745; /* Couleur des boutons */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-filters button:hover {
+            background-color: #218838; /* Couleur au survol */
+        }
+
+        /* Section */
+        h1, h2, h3 {
+            color: #007bff;
+        }
+
+        .properties-section {
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .properties {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .property {
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .property:hover {
+            transform: scale(1.05);
+        }
+
+        .property img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .property-details {
+            padding: 15px;
+        }
+
+        .footer {
+            background-color: #343a40; /* Couleur du footer */
+            color: #fff;
+            padding: 20px 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Filtres de recherche */
+        .search-filters {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-filters input, .search-filters select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Alertes */
+        .alert-section {
+            margin: 20px 0;
+        }
+
+        /* Évaluations */
+        .rating {
+            color: gold;
+        }
+
+        /* Partage */
+        .social-icons {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="menu">
+        <header>
+            <div class="logo">
+                <p><span>KN</span>IMMOBILIER</p>
+            </div>
+            <ul class="main-menu">
+                <li><a href="#">Accueil</a></li>
+                <li><a href="#">Acheter</a></li>
+                <li><a href="#">Vendre</a></li>
+                <li><a href="louer.html">Louer</a></li>
+                <li><a href="#">Contactez-nous</a></li>
+            </ul>
+            <ul class="auth-menu">
+                <li><a href="#">S'inscrire</a></li>
+                <li><a href="#">Se connecter</a></li>
+                <li><button class="button">Estimer mon bien</button></li>
+            </ul>
+        </header>
+    </nav>
+
+    <div class="container">
+        <h1>Des maisons qui inspirent</h1>
+        <p class="intro">Explorez nos propriétés à louer.</p>
+        <button onclick="getLocation()">Trouver ma position</button>
+    </div> 
+
+    <section class="search-filters">
+        <h2>Filtres de recherche</h2>
+        <form id="searchForm">
+            <input type="text" placeholder="Localisation" />
+            <input type="number" placeholder="Prix Min (€)" />
+            <input type="number" placeholder="Prix Max (€)" />
+            <select>
+                <option value="">Type de propriété</option>
+                <option value="appartement">Appartement</option>
+                <option value="maison">Maison</option>
+                <option value="bureau">Bureau</option>
+            </select>
+            <button type="submit">Rechercher</button>
+        </form>
+    </section>
+
+    <section class="alert-section">
+        <h2>Recevez des alertes par e-mail</h2>
+        <form id="alertForm">
+            <input type="email" placeholder="Votre e-mail" required />
+            <button type="submit">S'inscrire</button>
+        </form>
+    </section>
+
+    <section class="properties-section">
+        <h1>PROPRIÉTÉS À LOUER</h1>
+        <div class="properties">
+            <div class="property" data-title="Appartement à Bonapriso" data-price="500 000 fcfa/mois" data-lat="4.0511" data-lng="9.7085">
+                <img src="../photos/8.jpg" alt="Appartement à Bonapriso">
+                <div class="property-details">
+                    <h3>Appartement à Bonapriso</h3>
+                    <p>Prix: 500 000 fcfa/mois <br>2 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Appartement à Bonapriso', '500 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-bonapriso')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <div class="property" data-title="Maison à Douala" data-price="1 000 000 fcfa/mois" data-lat="4.0511" data-lng="9.7085">
+                <img src="../photos/9.jpg" alt="Maison à Douala">
+                <div class="property-details">
+                    <h3>Maison à Douala</h3>
+                    <p>Prix: 1 000 000 fcfa/mois <br>4 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Maison à Douala', '1 000 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-douala')">Visite Virtuelle</button>
+                </div>
+            </div>
+                    <div class="property" data-title="Maison à Buea" data-price="600 000 fcfa/mois">
+                <img src="../photos/14.jpg" alt="Maison à Buea">
+                <div class="property-details">
+                    <h3>Maison à Buea</h3>
+                    <p>Prix: 600 000 fcfa/mois <br>3 chambres</p>
+                    <div class="rating">⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Maison à Buea', '600 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-buea')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <div class="property" data-title="Appartement à Limbe" data-price="500 000 fcfa/mois">
+                <img src="../photos/15.jpg" alt="Appartement à Limbe">
+                <div class="property-details">
+                    <h3>Appartement à Limbe</h3>
+                    <p>Prix: 500 000 fcfa/mois <br>2 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Appartement à Limbe', '500 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-limbe2')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <div class="property" data-title="Maison à Bafoussam" data-price="650 000 fcfa/mois">
+                <img src="../photos/16.jpg" alt="Maison à Bafoussam">
+                <div class="property-details">
+                    <h3>Maison à Bafoussam</h3>
+                    <p>Prix: 650 000 fcfa/mois <br>4 pièces</p>
+                    <div class="rating">⭐⭐⭐⭐</div>
+                    <i class="fas fa-heart favorite-icon" onclick="toggleFavorite('Maison à Bafoussam', '650 000 fcfa/mois')"></i>
+                    <button onclick="openVirtualTour('https://example.com/virtual-tour-bafoussam')">Visite Virtuelle</button>
+                </div>
+            </div>
+            <!-- Ajoutez d'autres propriétés ici -->
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Liens utiles</h4>
+                <ul>
+                    <li><a href="#">Acheter</a></li>
+                    <li><a href="#">Louer</a></li>
+                    <li><a href="#">Vendre</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">À propos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: <a href="mailto:info@exemple.com">enzolord366@gmail.com</a></p>
+                <p>Téléphone: <a href="tel:693707794">+237 693707794</a></p>
+            </div>
+            <div class="footer-section">
+                <h4>Suivez-nous</h4>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/693707794" target="_blank" class="social-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="mailto:enzolord366@gmail.com" class="social-icon">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>A Propos</h4>
+                <p><a href="#">Qui sommes-nous ?</a></p>
+                <p><a href="#">Contacter le service client</a></p>
+                <p><a href="#">Nous rejoindre</a></p>
+                <p><a href="#">Presse</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; Réalisé par <span class="kn">KN</span>IMMOBILIER Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("La géolocalisation n'est pas supportée par ce navigateur.");
+            }
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            alert(`Votre position: ${lat}, ${lng}`);
+            // Vous pouvez ajouter ici la logique pour centrer la carte sur la position de l'utilisateur
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("L'utilisateur a refusé la demande de géolocalisation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Les informations de position ne sont pas disponibles.");
+                    break;
+                case error.TIMEOUT:
+                    alert("La demande de géolocalisation a expiré.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("Une erreur inconnue s'est produite.");
+                    break;
+            }
+        }
+
+        function toggleFavorite(title, price) {
+            alert(`${title} ajouté aux favoris à ${price}`);
+        }
+
+        function openVirtualTour(url) {
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
